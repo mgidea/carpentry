@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Carpentry::Application.config.secret_key_base = 'a5df6d0f28da22e30e3a36e0f9d5a6ebaf05767014727eddac17beb5eb0b1177f0ef96c5cc5f02c857f07f2484058adaca418c300a5ed4df2cc22b9792f73582'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+Carpentry::Application.config.secret_key_base = secure_token
